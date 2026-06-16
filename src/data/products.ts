@@ -28,11 +28,11 @@ export const mdPickProduct: Product = {
   reviewsCount: 142,
   isMdPick: true,
   colors: [
-    { name: "Obsidian Black (블랙)", value: "#141414", threeColor: "#141414" },
-    { name: "Royal Emerald (에메랄드)", value: "#0B4C3A", threeColor: "#052F22" },
-    { name: "Crimson Red (클래식 레드)", value: "#8A1C14", threeColor: "#7A100A" },
-    { name: "Champagne Cream (크림)", value: "#EEDCBE", threeColor: "#D4C2A4" },
-    { name: "Sweet Lavender (라벤더)", value: "#BEAEE2", threeColor: "#AA99D2" }
+    { name: "Obsidian Black (블랙)", value: "#141414", threeColor: "#2a2a28" },
+    { name: "Royal Emerald (에메랄드)", value: "#0B4C3A", threeColor: "#126e4f" },
+    { name: "Crimson Red (클래식 레드)", value: "#8A1C14", threeColor: "#ac1f17" },
+    { name: "Champagne Cream (크림)", value: "#EEDCBE", threeColor: "#f4e4cd" },
+    { name: "Sweet Lavender (라벤더)", value: "#BEAEE2", threeColor: "#cebeeb" }
   ]
 };
 

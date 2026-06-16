@@ -63,21 +63,30 @@ export default function Showcase3D() {
               camera={{ position: [0, 1.2, 3.5], fov: 45 }}
               gl={{ antialias: true, preserveDrawingBuffer: true }}
             >
-              {/* 조명 설정 (PBR 프리미엄 느낌 재현) */}
-              <ambientLight intensity={0.7} />
+              {/* 조명 설정 (명도를 극대화하여 3D 디테일을 밝고 명확하게 복원) */}
+              <ambientLight intensity={1.5} />
               <spotLight
-                position={[5, 10, 5]}
-                angle={0.3}
-                penumbra={1}
-                intensity={1.5}
+                position={[8, 12, 8]}
+                angle={0.4}
+                penumbra={1.0}
+                intensity={3.5}
                 castShadow
                 shadow-mapSize={2048}
               />
+              {/* 메인 정면 조명 (가방을 화사하게 비추는 사선 광원) */}
               <directionalLight
-                position={[-5, 5, -2]}
-                intensity={0.6}
+                position={[2, 4, 5]}
+                intensity={2.8}
+                castShadow
               />
-              <pointLight position={[0, -2, -2]} intensity={0.4} />
+              {/* 후방 실루엣 림라이트 (가방 실루엣과 손잡이를 부드럽게 강조) */}
+              <directionalLight
+                position={[-3, 4, -4]}
+                intensity={1.8}
+              />
+              {/* 하단 및 정면 보정용 포인트 조명 (어두운 디테일을 밀어내는 필라이트) */}
+              <pointLight position={[0, 2, 4]} intensity={2.2} decay={1.5} />
+              <pointLight position={[0, -2, 2]} intensity={1.0} />
 
               <Suspense fallback={null}>
                 {/* 3D 가방 모델 렌더링 */}

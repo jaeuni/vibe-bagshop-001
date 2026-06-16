@@ -37,10 +37,10 @@ export default function Bag3DModel({ color }: Bag3DModelProps) {
               (mat.metalness !== undefined && mat.metalness > 0.7);
 
             if (!isMetal) {
-              // 가죽 본체 재질 색상 업데이트
+              // 가죽 본체 재질 색상 업데이트 (명도 개선 및 실크 새틴 반사광 연출)
               mat.color.set(color);
-              mat.roughness = 0.35;
-              mat.metalness = 0.05;
+              mat.roughness = 0.45; // 난반사를 부드럽게 유도하여 한층 밝아 보이도록 튜닝
+              mat.metalness = 0.12; // 가죽 표면의 화사한 하이라이트 광택 유도
               
               // 3D 렌더러가 머티리얼 변경을 실시간 감지하도록 설정
               mat.needsUpdate = true;

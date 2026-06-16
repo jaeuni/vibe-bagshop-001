@@ -86,3 +86,9 @@
 - 모델 객체 트리(`scene.traverse`)를 탐색하여 가죽 파트의 재질(`MeshStandardMaterial`)을 찾아 사용자가 선택한 `color` 값으로 실시간 갱신하는 동적 컬러 튜닝 기능 연동.
 - `src/data/products.ts` 내 MD 추천 상품 제목을 `Aurelia Caviar Bag`으로 수정 및 관련 텍스트 최적화.
 
+### **[7단계] 3D 쇼케이스 조명 밝기 및 재질 명도 개선**
+- `src/components/Showcase3D.tsx` 내의 주광원(`ambientLight`, `spotLight`, `directionalLight`) 밝기 대폭 상향 조정. 가방 후면 및 하단의 어두운 음영을 보완하기 위한 포인트 조명 추가 설치.
+- `src/components/Bag3DModel.tsx`에서 가죽 재질의 반사광(`roughness`, `metalness`) 속성을 조절하여 난반사 효과를 극대화해 텍스처 형태를 뚜렷하게 복원.
+- `src/data/products.ts` 내 `threeColor` 정의를 미세하게 한 단계 더 화사하고 채도 높은 파스텔/비비드 톤으로 리터칭하여 웹 렌더링 명도 최적화.
+
+
