@@ -19,7 +19,7 @@ export interface Product {
 
 export const mdPickProduct: Product = {
   id: "md-001",
-  name: "VIBE Aurelia 3D Caviar Bag",
+  name: "Aurelia Caviar Bag",
   price: 2450000,
   originalPrice: 2890000,
   image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1000&q=80",

@@ -1,5 +1,6 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface Bag3DModelProps {
@@ -8,139 +9,73 @@ interface Bag3DModelProps {
 
 export default function Bag3DModel({ color }: Bag3DModelProps) {
   const groupRef = useRef<THREE.Group>(null);
+  
+  // public/aurelia_caviar_bag.glb 로드
+  const { scene } = useGLTF('/aurelia_caviar_bag.glb');
 
-  // 부드러운 자전(회전) 애니메이션 및 위아래로 둥실둥실 떠 있는 듯한 효과 추가
+  // 색상이 변경될 때마다 3D 모델의 재질을 동적으로 분석하여 가죽 부분 색상 갱신
+  useEffect(() => {
+    if (scene) {
+      scene.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          const mat = mesh.material as THREE.MeshStandardMaterial;
+          if (mat) {
+            const matName = mat.name ? mat.name.toLowerCase() : '';
+            
+            // 금속 재질 판별 조건 (금속 마감, 지퍼, 로고 플레이트, 체인 등은 색상 변경 제외)
+            const isMetal = 
+              matName.includes('metal') || 
+              matName.includes('gold') || 
+              matName.includes('brass') || 
+              matName.includes('hardware') || 
+              matName.includes('zipper') || 
+              matName.includes('chain') || 
+              matName.includes('silver') || 
+              matName.includes('chrome') || 
+              matName.includes('steel') || 
+              (mat.metalness !== undefined && mat.metalness > 0.7);
+
+            if (!isMetal) {
+              // 가죽 본체 재질 색상 업데이트
+              mat.color.set(color);
+              mat.roughness = 0.35;
+              mat.metalness = 0.05;
+              
+              // 3D 렌더러가 머티리얼 변경을 실시간 감지하도록 설정
+              mat.needsUpdate = true;
+            } else {
+              // 금속 부자재는 고품질 골드/실버 광택 적용
+              mat.metalness = 1.0;
+              mat.roughness = 0.15;
+              mat.needsUpdate = true;
+            }
+          }
+          
+          // 그림자 활성화
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+        }
+      });
+    }
+  }, [scene, color]);
+
+  // 천천히 자전 회전 및 공중 부유 애니메이션
   useFrame((state) => {
     if (groupRef.current) {
-      // 아주 천천히 자동 회전
       groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.15;
-      // 상하 미세 부유 운동
-      groupRef.current.position.y = Math.sin(state.clock.getElapsedTime() * 1.5) * 0.08 - 0.2;
+      groupRef.current.position.y = Math.sin(state.clock.getElapsedTime() * 1.5) * 0.06 - 0.1;
     }
   });
 
   return (
-    <group ref={groupRef} position={[0, -0.2, 0]} scale={[1.4, 1.4, 1.4]} castShadow receiveShadow>
-      {/* 1. 가방 몸체 (Main Body) */}
-      <mesh position={[0, 0.4, 0]} castShadow receiveShadow>
-        <boxGeometry args={[1.6, 1.0, 0.6, 8, 8, 8]} />
-        <meshStandardMaterial
-          color={color}
-          roughness={0.25}
-          metalness={0.1}
-          bumpScale={0.02}
-        />
-      </mesh>
-
-      {/* 1-2. 가방 앞면 장식 플랩 (Front Flap Cover) */}
-      <mesh position={[0, 0.42, 0.31]} castShadow>
-        <boxGeometry args={[1.54, 0.6, 0.04]} />
-        <meshStandardMaterial
-          color={color}
-          roughness={0.25}
-          metalness={0.1}
-        />
-      </mesh>
-
-      {/* 2. 가방 밑창/베이스 (Base) */}
-      <mesh position={[0, -0.12, 0]} castShadow receiveShadow>
-        <boxGeometry args={[1.64, 0.1, 0.64]} />
-        <meshStandardMaterial
-          color={color}
-          roughness={0.3}
-          metalness={0.15}
-        />
-      </mesh>
-
-      {/* 3. 명품 가죽 측면 가젯 (Sides Panel Accordion effect) */}
-      <mesh position={[-0.81, 0.4, 0]} rotation={[0, Math.PI / 2, 0]} castShadow>
-        <boxGeometry args={[0.56, 0.94, 0.04]} />
-        <meshStandardMaterial
-          color={color}
-          roughness={0.35}
-          metalness={0.05}
-        />
-      </mesh>
-      <mesh position={[0.81, 0.4, 0]} rotation={[0, Math.PI / 2, 0]} castShadow>
-        <boxGeometry args={[0.56, 0.94, 0.04]} />
-        <meshStandardMaterial
-          color={color}
-          roughness={0.35}
-          metalness={0.05}
-        />
-      </mesh>
-
-      {/* 4. 골드 버클 및 로고 플레이트 (Gold Buckle & Logo Plate) */}
-      {/* 금속판 백킹 */}
-      <mesh position={[0, 0.25, 0.34]} castShadow>
-        <boxGeometry args={[0.22, 0.12, 0.02]} />
-        <meshStandardMaterial
-          color="#E5C158"
-          metalness={0.9}
-          roughness={0.15}
-        />
-      </mesh>
-      {/* 금속 자물쇠 고리 */}
-      <mesh position={[0, 0.20, 0.36]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-        <cylinderGeometry args={[0.03, 0.03, 0.06, 16]} />
-        <meshStandardMaterial
-          color="#D4AF37"
-          metalness={1.0}
-          roughness={0.1}
-        />
-      </mesh>
-
-      {/* 5. 가죽 핸들 / 손잡이 (Round Handles x 2) */}
-      {/* 앞쪽 손잡이 */}
-      <mesh position={[0, 1.0, 0.15]} rotation={[0, 0, 0]} castShadow>
-        <torusGeometry args={[0.35, 0.05, 16, 100, Math.PI]} />
-        <meshStandardMaterial
-          color={color}
-          roughness={0.25}
-          metalness={0.1}
-        />
-      </mesh>
-      {/* 뒤쪽 손잡이 */}
-      <mesh position={[0, 1.0, -0.15]} rotation={[0, 0, 0]} castShadow>
-        <torusGeometry args={[0.35, 0.05, 16, 100, Math.PI]} />
-        <meshStandardMaterial
-          color={color}
-          roughness={0.25}
-          metalness={0.1}
-        />
-      </mesh>
-
-      {/* 6. 손잡이 골드 고정 고리 (Handle gold rings) */}
-      {/* 앞쪽 왼쪽 고리 */}
-      <mesh position={[-0.35, 0.9, 0.15]} rotation={[0, Math.PI/2, 0]} castShadow>
-        <torusGeometry args={[0.07, 0.02, 8, 24]} />
-        <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.15} />
-      </mesh>
-      {/* 앞쪽 오른쪽 고리 */}
-      <mesh position={[0.35, 0.9, 0.15]} rotation={[0, Math.PI/2, 0]} castShadow>
-        <torusGeometry args={[0.07, 0.02, 8, 24]} />
-        <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.15} />
-      </mesh>
-      {/* 뒤쪽 왼쪽 고리 */}
-      <mesh position={[-0.35, 0.9, -0.15]} rotation={[0, Math.PI/2, 0]} castShadow>
-        <torusGeometry args={[0.07, 0.02, 8, 24]} />
-        <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.15} />
-      </mesh>
-      {/* 뒤쪽 오른쪽 고리 */}
-      <mesh position={[0.35, 0.9, -0.15]} rotation={[0, Math.PI/2, 0]} castShadow>
-        <torusGeometry args={[0.07, 0.02, 8, 24]} />
-        <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.15} />
-      </mesh>
-
-      {/* 7. 명품 숄더 가죽 체인 스트랩 힌지 (Strap D-Rings on side) */}
-      <mesh position={[-0.82, 0.65, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-        <torusGeometry args={[0.08, 0.02, 8, 24]} />
-        <meshStandardMaterial color="#D4AF37" metalness={1.0} roughness={0.1} />
-      </mesh>
-      <mesh position={[0.82, 0.65, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-        <torusGeometry args={[0.08, 0.02, 8, 24]} />
-        <meshStandardMaterial color="#D4AF37" metalness={1.0} roughness={0.1} />
-      </mesh>
+    <group ref={groupRef} position={[0, -0.1, 0]} scale={[1.5, 1.4, 1.5]}>
+      <Center>
+        <primitive object={scene} />
+      </Center>
     </group>
   );
 }
+
+// 빌드 시 이 파일이 프리로드될 수 있도록 사전 로딩 정의
+useGLTF.preload('/aurelia_caviar_bag.glb');

@@ -79,3 +79,10 @@
 ### **[5단계] 메인 통합 및 배포 확인**
 - `src/App.tsx`에서 네비게이션 -> MD 추천 3D 쇼케이스 -> 인기상품 목록 순으로 레이아웃 통합.
 - 스타일 및 반응형 웹 디자인 점검 (모바일/태블릿/데스크톱 대응).
+
+### **[6단계] 외부 3D 에셋(.glb) 통합 및 커스터마이징**
+- 제공받은 `aurelia caviar bag 3d model.glb` 파일을 프로젝트의 `public/` 디렉터리로 복사 및 이름 매핑 (`public/aurelia_caviar_bag.glb`).
+- `src/components/Bag3DModel.tsx`를 전면 개편하여, `useGLTF` 훅을 사용해 3D 모델 데이터를 동적 로딩.
+- 모델 객체 트리(`scene.traverse`)를 탐색하여 가죽 파트의 재질(`MeshStandardMaterial`)을 찾아 사용자가 선택한 `color` 값으로 실시간 갱신하는 동적 컬러 튜닝 기능 연동.
+- `src/data/products.ts` 내 MD 추천 상품 제목을 `Aurelia Caviar Bag`으로 수정 및 관련 텍스트 최적화.
+
