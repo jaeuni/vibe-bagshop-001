@@ -6,8 +6,11 @@ import { mdPickProduct, ColorOption } from '../data/products';
 import Bag3DModel from './Bag3DModel';
 
 export default function Showcase3D() {
-  const [selectedColor, setSelectedColor] = useState<ColorOption>(
-    mdPickProduct.colors ? mdPickProduct.colors[0] : { name: "Black", value: "#141414", threeColor: "#141414" }
+  const [selectedBodyColor, setSelectedBodyColor] = useState<ColorOption>(
+    mdPickProduct.bodyColors ? mdPickProduct.bodyColors[0] : { name: "Black", value: "#141414", threeColor: "#2a2a28" }
+  );
+  const [selectedStrapColor, setSelectedStrapColor] = useState<ColorOption>(
+    mdPickProduct.strapColors ? mdPickProduct.strapColors[0] : { name: "Black", value: "#141414", threeColor: "#2a2a28" }
   );
   const [quantity, setQuantity] = useState(1);
   const [liked, setLiked] = useState(false);
@@ -89,8 +92,8 @@ export default function Showcase3D() {
               <pointLight position={[0, -2, 2]} intensity={1.0} />
 
               <Suspense fallback={null}>
-                {/* 3D 가방 모델 렌더링 */}
-                <Bag3DModel color={selectedColor.threeColor} />
+                {/* 3D 가방 모델 렌더링 (가방 본체 및 가방끈 색상 분리 렌더링 전송) */}
+                <Bag3DModel bodyColor={selectedBodyColor.threeColor} strapColor={selectedStrapColor.threeColor} />
                 
                 {/* 바닥 그림자 효과 */}
                 <ContactShadows
@@ -155,31 +158,69 @@ export default function Showcase3D() {
 
           <div className="h-[1px] w-full bg-white/10 mb-8"></div>
 
-          {/* INTERACTION 1: 가방 색상 스와치 선택기 */}
-          <div className="mb-8">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-xs uppercase tracking-widest text-zinc-400 font-semibold">Select Leather Color</span>
-              <span className="text-sm font-medium text-luxury-gold">{selectedColor.name}</span>
+          {/* INTERACTION 1: 가방 본체 가죽 색상 및 가방끈 색상 이중 커스터마이저 스와치 패널 */}
+          <div className="flex flex-col gap-6 mb-8">
+            
+            {/* 파트 1. 가방 본체 색상 스와치 */}
+            <div>
+              <div className="flex justify-between items-center mb-2.5">
+                <span className="text-xs uppercase tracking-widest text-zinc-400 font-semibold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-luxury-gold"></span>
+                  Select Bag Body Color
+                </span>
+                <span className="text-sm font-medium text-luxury-gold">{selectedBodyColor.name}</span>
+              </div>
+              <div className="flex flex-wrap gap-2.5">
+                {mdPickProduct.bodyColors?.map((colorOpt) => (
+                  <button
+                    key={colorOpt.name}
+                    onClick={() => setSelectedBodyColor(colorOpt)}
+                    className={`w-9 h-9 rounded-full border-2 transition-all duration-300 relative ${
+                      selectedBodyColor.name === colorOpt.name
+                        ? 'border-luxury-gold scale-110 shadow-lg shadow-luxury-gold/20'
+                        : 'border-white/20 hover:border-white/50 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: colorOpt.value }}
+                    title={colorOpt.name}
+                  >
+                    {selectedBodyColor.name === colorOpt.name && (
+                      <span className="absolute inset-0.5 rounded-full border border-black pointer-events-none"></span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-3">
-              {mdPickProduct.colors?.map((colorOpt) => (
-                <button
-                  key={colorOpt.name}
-                  onClick={() => setSelectedColor(colorOpt)}
-                  className={`w-10 h-10 rounded-full border-2 transition-all duration-300 relative ${
-                    selectedColor.name === colorOpt.name
-                      ? 'border-luxury-gold scale-110 shadow-lg shadow-luxury-gold/20'
-                      : 'border-white/20 hover:border-white/50 hover:scale-105'
-                  }`}
-                  style={{ backgroundColor: colorOpt.value }}
-                  title={colorOpt.name}
-                >
-                  {selectedColor.name === colorOpt.name && (
-                    <span className="absolute inset-0.5 rounded-full border border-black pointer-events-none"></span>
-                  )}
-                </button>
-              ))}
+
+            {/* 파트 2. 가방끈/손잡이 색상 스와치 */}
+            <div>
+              <div className="flex justify-between items-center mb-2.5">
+                <span className="text-xs uppercase tracking-widest text-zinc-400 font-semibold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-luxury-gold"></span>
+                  Select Strap & Handle Color
+                </span>
+                <span className="text-sm font-medium text-luxury-gold">{selectedStrapColor.name}</span>
+              </div>
+              <div className="flex flex-wrap gap-2.5">
+                {mdPickProduct.strapColors?.map((colorOpt) => (
+                  <button
+                    key={colorOpt.name}
+                    onClick={() => setSelectedStrapColor(colorOpt)}
+                    className={`w-9 h-9 rounded-full border-2 transition-all duration-300 relative ${
+                      selectedStrapColor.name === colorOpt.name
+                        ? 'border-luxury-gold scale-110 shadow-lg shadow-luxury-gold/20'
+                        : 'border-white/20 hover:border-white/50 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: colorOpt.value }}
+                    title={colorOpt.name}
+                  >
+                    {selectedStrapColor.name === colorOpt.name && (
+                      <span className="absolute inset-0.5 rounded-full border border-black pointer-events-none"></span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
+
           </div>
 
           {/* INTERACTION 2: 수량 선택 및 장바구니/구매 버튼 */}

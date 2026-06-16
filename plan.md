@@ -91,4 +91,10 @@
 - `src/components/Bag3DModel.tsx`에서 가죽 재질의 반사광(`roughness`, `metalness`) 속성을 조절하여 난반사 효과를 극대화해 텍스처 형태를 뚜렷하게 복원.
 - `src/data/products.ts` 내 `threeColor` 정의를 미세하게 한 단계 더 화사하고 채도 높은 파스텔/비비드 톤으로 리터칭하여 웹 렌더링 명도 최적화.
 
+### **[8단계] 가방 자체 색상 및 가방끈 색상 분리 커스터마이징**
+- `src/components/Showcase3D.tsx`에 가방 자체 색상(`bodyColor`)과 가방끈 및 손잡이 색상(`strapColor`)을 독립 조작하는 이원화된 제어판 패널(Dual Customizer Swatches) 구축.
+- `src/components/Bag3DModel.tsx`에서 3D 메쉬의 이름을 세분화 분석하여, 가방끈/핸들 관련 재질에는 `strapColor`를, 몸체/플랩 가죽 관련 재질에는 `bodyColor`를 각각 독립적으로 실시간 업데이트하는 다중 파츠 쉐이딩 연동.
+- `src/data/products.ts`에 본체(Body) 및 끈(Strap)에 매치할 수 있는 명품 에디션 맞춤형 컬러 옵션 리스트 셋 분리 정의.
+
+
 

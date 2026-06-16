@@ -15,6 +15,8 @@ export interface Product {
   reviewsCount: number;
   isMdPick?: boolean;
   colors?: ColorOption[];
+  bodyColors?: ColorOption[];
+  strapColors?: ColorOption[];
 }
 
 export const mdPickProduct: Product = {
@@ -27,11 +29,19 @@ export const mdPickProduct: Product = {
   rating: 4.9,
   reviewsCount: 142,
   isMdPick: true,
-  colors: [
+  bodyColors: [
     { name: "Obsidian Black (블랙)", value: "#141414", threeColor: "#2a2a28" },
     { name: "Royal Emerald (에메랄드)", value: "#0B4C3A", threeColor: "#126e4f" },
     { name: "Crimson Red (클래식 레드)", value: "#8A1C14", threeColor: "#ac1f17" },
     { name: "Champagne Cream (크림)", value: "#EEDCBE", threeColor: "#f4e4cd" },
+    { name: "Sweet Lavender (라벤더)", value: "#BEAEE2", threeColor: "#cebeeb" }
+  ],
+  strapColors: [
+    { name: "Obsidian Black (블랙)", value: "#141414", threeColor: "#2a2a28" },
+    { name: "Royal Emerald (에메랄드)", value: "#0B4C3A", threeColor: "#126e4f" },
+    { name: "Crimson Red (클래식 레드)", value: "#8A1C14", threeColor: "#ac1f17" },
+    { name: "Champagne Cream (크림)", value: "#EEDCBE", threeColor: "#f4e4cd" },
+    { name: "Honey Tan (허니 브라운)", value: "#A0522D", threeColor: "#a67c52" },
     { name: "Sweet Lavender (라벤더)", value: "#BEAEE2", threeColor: "#cebeeb" }
   ]
 };

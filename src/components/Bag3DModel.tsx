@@ -4,16 +4,17 @@ import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface Bag3DModelProps {
-  color: string;
+  bodyColor: string;
+  strapColor: string;
 }
 
-export default function Bag3DModel({ color }: Bag3DModelProps) {
+export default function Bag3DModel({ bodyColor, strapColor }: Bag3DModelProps) {
   const groupRef = useRef<THREE.Group>(null);
   
   // public/aurelia_caviar_bag.glb 로드
   const { scene } = useGLTF('/aurelia_caviar_bag.glb');
 
-  // 색상이 변경될 때마다 3D 모델의 재질을 동적으로 분석하여 가죽 부분 색상 갱신
+  // 색상이 변경될 때마다 3D 모델의 재질을 동적으로 분석하여 본체 가죽과 끈 부분 색상 분리 갱신
   useEffect(() => {
     if (scene) {
       scene.traverse((child) => {
@@ -22,6 +23,7 @@ export default function Bag3DModel({ color }: Bag3DModelProps) {
           const mat = mesh.material as THREE.MeshStandardMaterial;
           if (mat) {
             const matName = mat.name ? mat.name.toLowerCase() : '';
+            const meshName = mesh.name ? mesh.name.toLowerCase() : '';
             
             // 금속 재질 판별 조건 (금속 마감, 지퍼, 로고 플레이트, 체인 등은 색상 변경 제외)
             const isMetal = 
@@ -37,10 +39,26 @@ export default function Bag3DModel({ color }: Bag3DModelProps) {
               (mat.metalness !== undefined && mat.metalness > 0.7);
 
             if (!isMetal) {
-              // 가죽 본체 재질 색상 업데이트 (명도 개선 및 실크 새틴 반사광 연출)
-              mat.color.set(color);
-              mat.roughness = 0.45; // 난반사를 부드럽게 유도하여 한층 밝아 보이도록 튜닝
-              mat.metalness = 0.12; // 가죽 표면의 화사한 하이라이트 광택 유도
+              // 가방끈 및 손잡이 부분 판별 조건
+              const isStrapOrHandle = 
+                matName.includes('strap') || 
+                matName.includes('handle') || 
+                matName.includes('belt') || 
+                matName.includes('string') || 
+                matName.includes('cord') || 
+                meshName.includes('strap') || 
+                meshName.includes('handle');
+
+              if (isStrapOrHandle) {
+                // 가방끈 / 손잡이 부위 색상 주입
+                mat.color.set(strapColor);
+              } else {
+                // 가방 자체 몸체 부위 색상 주입
+                mat.color.set(bodyColor);
+              }
+
+              mat.roughness = 0.45; // 부드러운 난반사 밸런싱
+              mat.metalness = 0.12; // 가죽 하이라이트 광택 유도
               
               // 3D 렌더러가 머티리얼 변경을 실시간 감지하도록 설정
               mat.needsUpdate = true;
@@ -58,7 +76,7 @@ export default function Bag3DModel({ color }: Bag3DModelProps) {
         }
       });
     }
-  }, [scene, color]);
+  }, [scene, bodyColor, strapColor]);
 
   // 천천히 자전 회전 및 공중 부유 애니메이션
   useFrame((state) => {
